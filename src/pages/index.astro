@@ -158,7 +158,8 @@ const translations = getTranslations(defaultLang);
 		</main>
 
 		<script>
-			import { getCurrentLanguage, setLanguage, t, type Language } from '../i18n/utils';
+			import { getCurrentLanguage, setLanguage, type Language } from '../i18n/utils';
+			import { loadTranslations, tClient } from '../i18n/client-utils';
 			import { convertYouTubeUrl, normalizeUrl } from '../utils/youtube-converter';
 
 			// Initialize language
@@ -177,9 +178,12 @@ const translations = getTranslations(defaultLang);
 			const languageOptions = document.querySelectorAll('.language-option') as NodeListOf<HTMLButtonElement>;
 
 			// Update UI text based on current language
-			function updateUIText(): void {
+			async function updateUIText(): Promise<void> {
+				// Load translations for current language
+				await loadTranslations(currentLang);
+
 				document.documentElement.lang = currentLang;
-				document.title = t(currentLang, 'app.title');
+				document.title = tClient(currentLang, 'app.title');
 
 				const appTitle = document.getElementById('app-title');
 				const appDescription = document.getElementById('app-description');
@@ -187,11 +191,11 @@ const translations = getTranslations(defaultLang);
 				const infoText = document.getElementById('info-text');
 				const footerText = document.getElementById('footer-text');
 
-				if (appTitle) appTitle.textContent = t(currentLang, 'app.title');
-				if (appDescription) appDescription.textContent = t(currentLang, 'app.description');
-				if (inputLabel) inputLabel.textContent = t(currentLang, 'form.inputPlaceholder');
-				if (input) input.placeholder = t(currentLang, 'form.inputPlaceholder');
-				if (buttonText) buttonText.textContent = t(currentLang, 'form.convertButton');
+				if (appTitle) appTitle.textContent = tClient(currentLang, 'app.title');
+				if (appDescription) appDescription.textContent = tClient(currentLang, 'app.description');
+				if (inputLabel) inputLabel.textContent = tClient(currentLang, 'form.inputPlaceholder');
+				if (input) input.placeholder = tClient(currentLang, 'form.inputPlaceholder');
+				if (buttonText) buttonText.textContent = tClient(currentLang, 'form.convertButton');
 
 				if (infoText) {
 					infoText.textContent = currentLang === 'da'
@@ -200,7 +204,7 @@ const translations = getTranslations(defaultLang);
 				}
 
 				if (footerText) {
-					footerText.textContent = t(currentLang, 'footer.madeWith') + ' ❤️';
+					footerText.textContent = tClient(currentLang, 'footer.madeWith') + ' ❤️';
 				}
 
 				currentLanguageSpan.textContent = currentLang === 'da' ? 'Dansk' : 'English';
@@ -208,7 +212,7 @@ const translations = getTranslations(defaultLang);
 
 			// Show error message
 			function showError(errorKey: string): void {
-				errorText.textContent = t(currentLang, `errors.${errorKey}`);
+				errorText.textContent = tClient(currentLang, `errors.${errorKey}`);
 				errorMessage.classList.remove('hidden');
 			}
 
@@ -242,7 +246,7 @@ const translations = getTranslations(defaultLang);
 
 				// Show converting state
 				submitButton.disabled = true;
-				buttonText.textContent = t(currentLang, 'form.converting');
+				buttonText.textContent = tClient(currentLang, 'form.converting');
 
 				// Redirect to converted URL
 				setTimeout(() => {
@@ -269,12 +273,12 @@ const translations = getTranslations(defaultLang);
 
 			// Handle language selection
 			languageOptions.forEach(option => {
-				option.addEventListener('click', () => {
+				option.addEventListener('click', async () => {
 					const lang = option.dataset.lang as Language;
 					if (lang && (lang === 'da' || lang === 'en')) {
 						currentLang = lang;
 						setLanguage(lang);
-						updateUIText();
+						await updateUIText();
 						languageMenu.classList.add('hidden');
 					}
 				});
