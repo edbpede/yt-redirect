@@ -14,8 +14,8 @@ export default defineConfig({
     },
   },
   build: {
-    // Inline small assets to reduce HTTP requests
-    inlineStylesheets: 'never', // We're using critical CSS strategy
+    // Don't inline stylesheets to keep them cacheable
+    inlineStylesheets: 'never',
   },
   compressHTML: true,
   i18n: {
