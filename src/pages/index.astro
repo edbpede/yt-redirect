@@ -250,8 +250,14 @@ const translations = getTranslations(defaultLang);
 				});
 			});
 
-			// Initialize UI
-			updateUIText();
+			// Initialize UI after DOM and stylesheets are loaded
+			// This prevents Firefox warning: "Layout was forced before the page was fully loaded"
+			if (document.readyState === 'loading') {
+				document.addEventListener('DOMContentLoaded', updateUIText);
+			} else {
+				// DOM is already loaded, call immediately
+				updateUIText();
+			}
 		</script>
 	</body>
 </html>
