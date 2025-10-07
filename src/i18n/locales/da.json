@@ -1,0 +1,26 @@
+{
+  "app": {
+    "title": "YouTube Link Konverter",
+    "description": "Konverter YouTube links til yout-ube.com"
+  },
+  "form": {
+    "inputPlaceholder": "Indsæt YouTube link her...",
+    "convertButton": "Konverter og Åbn",
+    "converting": "Konverterer..."
+  },
+  "errors": {
+    "invalidUrl": "Ugyldig YouTube URL. Indsæt venligst et gyldigt YouTube link.",
+    "emptyInput": "Indsæt venligst et YouTube link.",
+    "conversionFailed": "Konvertering mislykkedes. Prøv venligst igen."
+  },
+  "language": {
+    "select": "Vælg sprog",
+    "danish": "Dansk",
+    "english": "English"
+  },
+  "footer": {
+    "madeWith": "Lavet med",
+    "by": "af"
+  }
+}
+

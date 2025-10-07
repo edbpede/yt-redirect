@@ -1,0 +1,26 @@
+{
+  "app": {
+    "title": "YouTube Link Converter",
+    "description": "Convert YouTube links to yout-ube.com"
+  },
+  "form": {
+    "inputPlaceholder": "Paste YouTube link here...",
+    "convertButton": "Convert and Open",
+    "converting": "Converting..."
+  },
+  "errors": {
+    "invalidUrl": "Invalid YouTube URL. Please paste a valid YouTube link.",
+    "emptyInput": "Please paste a YouTube link.",
+    "conversionFailed": "Conversion failed. Please try again."
+  },
+  "language": {
+    "select": "Select language",
+    "danish": "Dansk",
+    "english": "English"
+  },
+  "footer": {
+    "madeWith": "Made with",
+    "by": "by"
+  }
+}
+

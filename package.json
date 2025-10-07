@@ -1,16 +1,30 @@
 {
-  "name": "",
+  "name": "yt-redirect",
   "type": "module",
-  "version": "0.0.1",
+  "version": "1.0.0",
+  "description": "A modern YouTube link converter that converts YouTube URLs to yout-ube.com equivalents",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "check": "astro check"
   },
   "dependencies": {
+    "@astrojs/check": "^0.9.4",
     "@tailwindcss/vite": "^4.1.14",
     "astro": "^5.14.1",
-    "tailwindcss": "^4.1.14"
-  }
+    "tailwindcss": "^4.1.14",
+    "typescript": "^5.9.3"
+  },
+  "keywords": [
+    "youtube",
+    "converter",
+    "astro",
+    "typescript",
+    "tailwind",
+    "i18n"
+  ],
+  "author": "",
+  "license": "MIT"
 }
