@@ -37,7 +37,7 @@ jobs:
 
       # This is the one npm repo in the fleet; there is no bun lockfile here.
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           # No committed Node version file in this repo; pinned explicitly to
           # an LTS release rather than tracking `latest`. Matches code-quality.yml.
