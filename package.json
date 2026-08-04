@@ -9,6 +9,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "check": "astro check",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "lint": "biome check .",
     "lint:fix": "biome check --write ."
   },
@@ -20,7 +22,8 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
     "@biomejs/biome": "2.5.6",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.10"
   },
   "keywords": [
     "youtube",

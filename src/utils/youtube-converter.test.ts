@@ -1,187 +1,131 @@
 /**
- * Test suite for YouTube URL converter
- * Run with: npm test (after setting up a test runner)
+ * Test suite for the YouTube URL converter.
+ *
+ * Run with: npm test
+ *
+ * These cases were previously a hand-rolled console script that only logged its
+ * results, so it could never fail a build. The inputs and expected values are
+ * carried over unchanged; only the harness became real assertions.
  */
 
+import { describe, expect, it } from "vitest";
 import { convertYouTubeUrl, isYouTubeUrl, normalizeUrl } from "./youtube-converter";
 
-// Test data
-const testCases = [
-  // Standard youtube.com/watch?v= format
+const conversionCases = [
   {
+    description: "Standard youtube.com/watch?v= URL",
     input: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
     expected: "https://yout-ube.com/watch?v=dQw4w9WgXcQ",
-    description: "Standard youtube.com/watch?v= URL",
   },
-  // youtu.be short links
   {
+    description: "youtu.be short link",
     input: "https://youtu.be/dQw4w9WgXcQ",
     expected: "https://yout-ube.com/watch?v=dQw4w9WgXcQ",
-    description: "youtu.be short link",
   },
-  // Mobile links
   {
+    description: "Mobile YouTube URL",
     input: "https://m.youtube.com/watch?v=dQw4w9WgXcQ",
     expected: "https://yout-ube.com/watch?v=dQw4w9WgXcQ",
-    description: "Mobile YouTube URL",
   },
-  // Embed links
   {
+    description: "Embedded YouTube URL",
     input: "https://www.youtube.com/embed/dQw4w9WgXcQ",
     expected: "https://yout-ube.com/watch?v=dQw4w9WgXcQ",
-    description: "Embedded YouTube URL",
   },
-  // Shorts
   {
+    description: "YouTube Shorts URL",
     input: "https://www.youtube.com/shorts/dQw4w9WgXcQ",
     expected: "https://yout-ube.com/watch?v=dQw4w9WgXcQ",
-    description: "YouTube Shorts URL",
   },
-  // Live videos
   {
+    description: "YouTube Live URL",
     input: "https://www.youtube.com/live/dQw4w9WgXcQ",
     expected: "https://yout-ube.com/watch?v=dQw4w9WgXcQ",
-    description: "YouTube Live URL",
   },
-  // With timestamp
   {
+    description: "URL with timestamp",
     input: "https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=42s",
     expected: "https://yout-ube.com/watch?v=dQw4w9WgXcQ&t=42s",
-    description: "URL with timestamp",
   },
-  // With playlist
   {
+    description: "URL with playlist",
     input: "https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=PLrAXtmErZgOeiKm4sgNOknGvNjby9efdf",
     expected: "https://yout-ube.com/watch?v=dQw4w9WgXcQ&list=PLrAXtmErZgOeiKm4sgNOknGvNjby9efdf",
-    description: "URL with playlist",
   },
-  // youtu.be with timestamp
   {
+    description: "youtu.be with timestamp",
     input: "https://youtu.be/dQw4w9WgXcQ?t=42",
     expected: "https://yout-ube.com/watch?v=dQw4w9WgXcQ&t=42",
-    description: "youtu.be with timestamp",
   },
-  // Music YouTube
   {
+    description: "YouTube Music URL",
     input: "https://music.youtube.com/watch?v=dQw4w9WgXcQ",
     expected: "https://yout-ube.com/watch?v=dQw4w9WgXcQ",
-    description: "YouTube Music URL",
   },
 ];
 
-// Manual testing function (can be called from browser console)
-export function runTests(): void {
-  console.log("🧪 Running YouTube Converter Tests...\n");
+describe("convertYouTubeUrl", () => {
+  it.each(conversionCases)("converts: $description", ({ input, expected }) => {
+    const result = convertYouTubeUrl(input);
 
-  let passed = 0;
-  let failed = 0;
-
-  testCases.forEach((testCase, index) => {
-    const result = convertYouTubeUrl(testCase.input);
-
-    if (result.success && result.convertedUrl === testCase.expected) {
-      console.log(`✅ Test ${index + 1}: ${testCase.description}`);
-      console.log(`   Input:    ${testCase.input}`);
-      console.log(`   Output:   ${result.convertedUrl}`);
-      console.log(`   Expected: ${testCase.expected}\n`);
-      passed++;
-    } else {
-      console.error(`❌ Test ${index + 1}: ${testCase.description}`);
-      console.error(`   Input:    ${testCase.input}`);
-      console.error(`   Output:   ${result.convertedUrl || "ERROR: " + result.error}`);
-      console.error(`   Expected: ${testCase.expected}\n`);
-      failed++;
-    }
+    expect(result.success).toBe(true);
+    expect(result.convertedUrl).toBe(expected);
   });
 
-  console.log(
-    `\n📊 Test Results: ${passed} passed, ${failed} failed out of ${testCases.length} tests`,
+  // Rejections must be reported as a failed result, not thrown and not silently
+  // converted into a bogus yout-ube.com link.
+  it.each([
+    { description: "empty string", input: "", error: "emptyInput" },
+    { description: "whitespace only", input: "   ", error: "emptyInput" },
+    { description: "not a URL at all", input: "not a url", error: "invalidUrl" },
+    { description: "non-YouTube host", input: "https://google.com", error: "invalidUrl" },
+    { description: "other video host", input: "https://vimeo.com/123456", error: "invalidUrl" },
+  ])("rejects: $description", ({ input, error }) => {
+    const result = convertYouTubeUrl(input);
+
+    expect(result.success).toBe(false);
+    expect(result.error).toBe(error);
+    expect(result.convertedUrl).toBeUndefined();
+  });
+
+  it("rejects a YouTube host with no extractable video id", () => {
+    const result = convertYouTubeUrl("https://www.youtube.com/feed/subscriptions");
+
+    expect(result.success).toBe(false);
+    expect(result.error).toBe("invalidUrl");
+  });
+});
+
+describe("isYouTubeUrl", () => {
+  it.each([
+    "https://www.youtube.com/watch?v=test",
+    "https://youtube.com/watch?v=test",
+    "https://m.youtube.com/watch?v=test",
+    "https://music.youtube.com/watch?v=test",
+    "https://youtu.be/test",
+  ])("accepts %s", (url) => {
+    expect(isYouTubeUrl(url)).toBe(true);
+  });
+
+  it.each(["https://google.com", "not a url", "", "https://notyoutube.com/watch?v=test"])(
+    "rejects %s",
+    (url) => {
+      expect(isYouTubeUrl(url)).toBe(false);
+    },
   );
+});
 
-  // Test invalid URLs
-  console.log("\n🧪 Testing Invalid URLs...\n");
-
-  const invalidUrls = ["", "not a url", "https://google.com", "https://vimeo.com/123456"];
-
-  let invalidPassed = 0;
-  invalidUrls.forEach((url, index) => {
-    const result = convertYouTubeUrl(url);
-    if (!result.success) {
-      console.log(`✅ Invalid URL Test ${index + 1}: Correctly rejected "${url}"`);
-      invalidPassed++;
-    } else {
-      console.error(`❌ Invalid URL Test ${index + 1}: Should have rejected "${url}"`);
-    }
-  });
-
-  console.log(`\n📊 Invalid URL Tests: ${invalidPassed} passed out of ${invalidUrls.length} tests`);
-
-  // Test URL validation
-  console.log("\n🧪 Testing URL Validation...\n");
-
-  const validationTests = [
-    { url: "https://www.youtube.com/watch?v=test", expected: true },
-    { url: "https://youtu.be/test", expected: true },
-    { url: "https://google.com", expected: false },
-    { url: "not a url", expected: false },
-  ];
-
-  let validationPassed = 0;
-  validationTests.forEach((test, index) => {
-    const result = isYouTubeUrl(test.url);
-    if (result === test.expected) {
-      console.log(`✅ Validation Test ${index + 1}: "${test.url}" -> ${result}`);
-      validationPassed++;
-    } else {
-      console.error(
-        `❌ Validation Test ${index + 1}: "${test.url}" -> ${result} (expected ${test.expected})`,
-      );
-    }
-  });
-
-  console.log(
-    `\n📊 Validation Tests: ${validationPassed} passed out of ${validationTests.length} tests`,
-  );
-
-  // Test URL normalization
-  console.log("\n🧪 Testing URL Normalization...\n");
-
-  const normalizationTests = [
+describe("normalizeUrl", () => {
+  it.each([
     { input: "youtube.com/watch?v=test", expected: "https://youtube.com/watch?v=test" },
     { input: "www.youtube.com/watch?v=test", expected: "https://www.youtube.com/watch?v=test" },
     { input: "youtu.be/test", expected: "https://youtu.be/test" },
     { input: "https://youtube.com/watch?v=test", expected: "https://youtube.com/watch?v=test" },
-  ];
-
-  let normalizationPassed = 0;
-  normalizationTests.forEach((test, index) => {
-    const result = normalizeUrl(test.input);
-    if (result === test.expected) {
-      console.log(`✅ Normalization Test ${index + 1}: "${test.input}" -> "${result}"`);
-      normalizationPassed++;
-    } else {
-      console.error(
-        `❌ Normalization Test ${index + 1}: "${test.input}" -> "${result}" (expected "${test.expected}")`,
-      );
-    }
+  ])("normalizes $input", ({ input, expected }) => {
+    expect(normalizeUrl(input)).toBe(expected);
   });
 
-  console.log(
-    `\n📊 Normalization Tests: ${normalizationPassed} passed out of ${normalizationTests.length} tests`,
-  );
-
-  const totalTests =
-    testCases.length + invalidUrls.length + validationTests.length + normalizationTests.length;
-  const totalPassed = passed + invalidPassed + validationPassed + normalizationPassed;
-
-  console.log(`\n🎉 Overall Results: ${totalPassed}/${totalTests} tests passed`);
-
-  if (totalPassed === totalTests) {
-    console.log("✨ All tests passed! ✨");
-  }
-}
-
-// Export for use in browser console
-if (typeof window !== "undefined") {
-  (window as any).runYouTubeConverterTests = runTests;
-}
+  it("leaves an existing http:// protocol alone", () => {
+    expect(normalizeUrl("http://youtu.be/test")).toBe("http://youtu.be/test");
+  });
+});

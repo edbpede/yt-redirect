@@ -1,4 +1,4 @@
-# Code quality gate: Biome (format + lint), Astro type check, build.
+# Code quality gate: Biome (format + lint), Astro type check, unit tests, build.
 #
 # The `biome-migrate` job exists so Renovate's grouped "biome" PRs can carry the
 # config migration a new Biome release may require: it runs the repo-local
@@ -83,7 +83,7 @@ jobs:
         run: npx biome ci .
 
   quality:
-    name: Format · lint · types · build
+    name: Format · lint · types · test · build
     runs-on: ubuntu-latest
     timeout-minutes: 20
     needs: [biome-migrate]
@@ -115,6 +115,9 @@ jobs:
 
       - name: Astro type check
         run: npm run check
+
+      - name: Test
+        run: npm test
 
       - name: Build
         run: npm run build
