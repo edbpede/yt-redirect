@@ -5,6 +5,13 @@ on:
     branches:
       - main
 
+# Least privilege, stated explicitly rather than inherited from the repository
+# default (currently "write"). peaceiris/actions-gh-pages pushes the built site
+# to the gh-pages branch using GITHUB_TOKEN, which needs contents: write and
+# nothing else.
+permissions:
+  contents: write
+
 jobs:
   deploy:
     if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
@@ -12,21 +19,26 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
 
+      # `npm ci` rather than `npm install`: installs exactly what
+      # package-lock.json pins instead of quietly resolving newer versions at
+      # deploy time, and fails loudly if the lockfile is out of step with
+      # package.json. Matches code-quality.yml and smoke.yml.
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build project
         run: npm run build
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
