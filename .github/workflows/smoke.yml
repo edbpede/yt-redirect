@@ -41,7 +41,7 @@ jobs:
         with:
           # No committed Node version file in this repo; pinned explicitly to
           # an LTS release rather than tracking `latest`. Matches code-quality.yml.
-          node-version: 22
+          node-version: 24
           cache: npm
 
       - name: Install dependencies
