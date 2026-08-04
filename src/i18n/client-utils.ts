@@ -3,7 +3,7 @@
  * This file is separated from utils.ts to enable proper code splitting
  */
 
-import type { Language, TranslationKeys } from './utils';
+import type { Language, TranslationKeys } from "./utils";
 
 // Client-side translation cache
 const translationCache = new Map<Language, TranslationKeys>();
@@ -22,11 +22,11 @@ export async function loadTranslations(lang: Language): Promise<TranslationKeys>
   // Dynamically import the translation file
   let translations: TranslationKeys;
 
-  if (lang === 'da') {
-    const module = await import('./locales/da.json');
+  if (lang === "da") {
+    const module = await import("./locales/da.json");
     translations = module.default;
   } else {
-    const module = await import('./locales/en.json');
+    const module = await import("./locales/en.json");
     translations = module.default;
   }
 
@@ -42,18 +42,18 @@ export async function loadTranslations(lang: Language): Promise<TranslationKeys>
  * @returns The translated string
  */
 function getTranslationValue(translationObj: any, key: string): string {
-  const keys = key.split('.');
+  const keys = key.split(".");
   let value: any = translationObj;
 
   for (const k of keys) {
-    if (value && typeof value === 'object' && k in value) {
+    if (value && typeof value === "object" && k in value) {
       value = value[k];
     } else {
       return key; // Return key if translation not found
     }
   }
 
-  return typeof value === 'string' ? value : key;
+  return typeof value === "string" ? value : key;
 }
 
 /**

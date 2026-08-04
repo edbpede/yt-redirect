@@ -1,14 +1,14 @@
-import da from './locales/da.json';
-import en from './locales/en.json';
+import da from "./locales/da.json";
+import en from "./locales/en.json";
 
 export const languages = {
-  da: 'Dansk',
-  en: 'English',
+  da: "Dansk",
+  en: "English",
 } as const;
 
 export type Language = keyof typeof languages;
 
-export const defaultLang: Language = 'da';
+export const defaultLang: Language = "da";
 
 export const translations = {
   da,
@@ -24,17 +24,17 @@ export type TranslationKeys = typeof da;
  * @returns The translated string
  */
 export function t(lang: Language, key: string): string {
-  const keys = key.split('.');
+  const keys = key.split(".");
   let value: any = translations[lang];
 
   for (const k of keys) {
-    if (value && typeof value === 'object' && k in value) {
+    if (value && typeof value === "object" && k in value) {
       value = value[k];
     } else {
       // Fallback to default language if key not found
       value = translations[defaultLang];
       for (const fallbackKey of keys) {
-        if (value && typeof value === 'object' && fallbackKey in value) {
+        if (value && typeof value === "object" && fallbackKey in value) {
           value = value[fallbackKey];
         } else {
           return key; // Return key if translation not found
@@ -44,7 +44,7 @@ export function t(lang: Language, key: string): string {
     }
   }
 
-  return typeof value === 'string' ? value : key;
+  return typeof value === "string" ? value : key;
 }
 
 /**
@@ -52,15 +52,15 @@ export function t(lang: Language, key: string): string {
  * @returns The current language code
  */
 export function getCurrentLanguage(): Language {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return defaultLang;
   }
-  
-  const stored = localStorage.getItem('language');
-  if (stored && (stored === 'da' || stored === 'en')) {
+
+  const stored = localStorage.getItem("language");
+  if (stored && (stored === "da" || stored === "en")) {
     return stored as Language;
   }
-  
+
   return defaultLang;
 }
 
@@ -69,8 +69,8 @@ export function getCurrentLanguage(): Language {
  * @param lang - The language code to set
  */
 export function setLanguage(lang: Language): void {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem('language', lang);
+  if (typeof window !== "undefined") {
+    localStorage.setItem("language", lang);
   }
 }
 
@@ -82,4 +82,3 @@ export function setLanguage(lang: Language): void {
 export function getTranslations(lang: Language): TranslationKeys {
   return translations[lang];
 }
-

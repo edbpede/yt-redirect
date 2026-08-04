@@ -1,6 +1,7 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
-import tailwindcss from '@tailwindcss/vite';
+
+import tailwindcss from "@tailwindcss/vite";
+import { defineConfig } from "astro/config";
 
 // https://astro.build/config
 export default defineConfig({
@@ -8,19 +9,19 @@ export default defineConfig({
     plugins: [tailwindcss()],
     build: {
       // Use esbuild for fast minification
-      minify: 'esbuild',
+      minify: "esbuild",
       // Enable CSS code splitting
       cssCodeSplit: false, // Keep CSS in one file for this small app
     },
   },
   build: {
     // Don't inline stylesheets to keep them cacheable
-    inlineStylesheets: 'never',
+    inlineStylesheets: "never",
   },
   compressHTML: true,
   i18n: {
-    defaultLocale: 'da',
-    locales: ['da', 'en'],
+    defaultLocale: "da",
+    locales: ["da", "en"],
     routing: {
       prefixDefaultLocale: false,
     },
