@@ -120,17 +120,17 @@ handful of document-level base rules that are not utilities.
   ~30 `dark:` utilities compile to selectors that can never match: the build succeeds, the CSS looks
   full, and the site is quietly light-only. `e2e/appearance.spec.ts` is the guard; flipping the
   option back to `"class"` fails two of its tests immediately.
-- **`presetShadcn` is present but inert** (`color: false`, `radius: false`, `globals: false`). It is
-  the estate's token bridge; no shadcn-svelte component is installed here, so letting it emit its
-  palette would ship a dead `:root`/`.dark` block — and that `.dark` block is precisely the
-  class-based dark mode this page must not have. See "Not adopted" below.
+- **No `presetShadcn`, `presetAnimations` or `presetIcons`, unlike the sibling repos.** None has a
+  consumer here: no `animate-*` utility, no `i-*` utility and no `@iconify-json/*` collection for
+  `presetIcons` to resolve against, and no shadcn-svelte component, `components.json` or `cn()`
+  helper for `presetShadcn` to serve. `presetShadcn` is not free when unused — it emits four
+  `@keyframes` referencing `--radix-*` variables nothing here can define, and its `globals` would
+  ship a `.dark` block, which is precisely the class-based dark mode this page must not have. Add
+  one back in the shape `faktalink` uses when something actually needs it.
 - **`safelist: ["hidden"]` is not decoration.** The language menu and the error box toggle
   visibility with Svelte's `class:hidden={…}` directive, and UnoCSS's default extractor reads
   `class="…"` string literals, not class directives. Remove the safelist entry and
   `.hidden{display:none}` disappears from the built CSS, leaving the menu permanently open.
-- `presetIcons` is configured but no `@iconify-json/*` collection is installed, so no `i-*` utility
-  resolves today. Every icon on the page is an inline SVG carried over from the pre-migration
-  markup. Adding a collection is a dependency line and nothing else.
 
 ## i18n
 
@@ -154,7 +154,8 @@ asserts that.
 3. `src/lib/stores/language.ts` — the `decode` guard, which currently reads
    `value === "en" ? "en" : defaultLang`
 4. `src/components/LanguageSwitcher.svelte` — a `data-lang` menu button
-5. `astro.config.mjs` — the `i18n.locales` array
+5. `astro.config.mjs` — the `i18n.locales` array. Nothing reads it today (see Gotchas: no locale
+   routing is active), but leaving it stale would mislead the next reader
 
 Nothing else hardcodes the pair any more. The info-box tip and the language label used to be
 inline `da`/`en` ternaries in the page; both are locale keys now (`form.tip`, and the `languages`
@@ -191,8 +192,7 @@ map). Keep it that way.
 
 - **shadcn-svelte / bits-ui.** The only candidate is the language dropdown. Adopting it would
   replace hand-written markup and change the DOM and classes, which puts visual parity at risk for
-  no functional gain. `unocss-preset-shadcn` is in `uno.config.ts` as the estate's token bridge, but
-  no component is installed.
+  no functional gain. `unocss-preset-shadcn` is not installed either — see Styling above.
 - **Astro actions, middleware, content collections, an adapter.** There is no server: the site is
   static and the conversion is client-side by design.
 - **`client:visible`.** Both islands are above the fold on a single-screen page and one of them *is*

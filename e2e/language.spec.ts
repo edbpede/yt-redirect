@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { LANGUAGE_STORAGE_KEY } from "../src/lib/stores/language";
 
 /**
  * The language switcher, and the store both islands read.
@@ -76,18 +77,18 @@ test("stores the bare language code under the pre-migration key", async ({ page 
   await page.locator('[data-lang="en"]').click();
   await expect(page.locator("#app-title")).toHaveText("YouTube Link Converter");
 
-  expect(await page.evaluate(() => localStorage.getItem("language"))).toBe("en");
+  expect(await page.evaluate((key) => localStorage.getItem(key), LANGUAGE_STORAGE_KEY)).toBe("en");
 });
 
 test("honours a preference written by the pre-migration code", async ({ page }) => {
-  await page.evaluate(() => localStorage.setItem("language", "en"));
+  await page.evaluate((key) => localStorage.setItem(key, "en"), LANGUAGE_STORAGE_KEY);
   await page.reload();
 
   await expect(page.locator("#app-title")).toHaveText("YouTube Link Converter");
 });
 
 test("falls back to Danish when the stored value is not a language we ship", async ({ page }) => {
-  await page.evaluate(() => localStorage.setItem("language", "de"));
+  await page.evaluate((key) => localStorage.setItem(key, "de"), LANGUAGE_STORAGE_KEY);
   await page.reload();
 
   await expect(page.locator("#app-title")).toHaveText("YouTube Link Konverter");

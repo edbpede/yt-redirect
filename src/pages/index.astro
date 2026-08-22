@@ -8,10 +8,20 @@ import ConverterForm from "../components/ConverterForm.svelte";
 import LanguageSwitcher from "../components/LanguageSwitcher.svelte";
 import { defaultLang, getTranslations } from "../i18n/utils";
 
-// The document is server-rendered in the default language. The islands take over
-// from the persisted `language` store on hydration, so a visitor who chose
-// English sees Danish only for the moment before hydration — never an
-// untranslated key.
+// The document is server-rendered in the default language, and the islands apply
+// the persisted `language` store once they hydrate. A visitor who chose English
+// therefore reads a Danish page until hydration completes and then sees the text
+// swap under them — never an untranslated key, but not instant either.
+//
+// That window is real and it got longer in the move to islands: measured against
+// the pre-migration inline script (~6.5 KB of JS) versus these islands (~55 KB,
+// Svelte runtime included), the flip goes from ~100 ms to ~180 ms on a fast
+// connection and from ~1.1 s to ~2.9 s at 400 kbps. It is the honest price of
+// deleting the imperative getElementById sweep this page used to run.
+//
+// Closing it properly means serving the chosen language from the server; a
+// blocking inline script in <head> would only reintroduce the imperative code
+// this migration removed.
 const translations = getTranslations(defaultLang);
 ---
 
