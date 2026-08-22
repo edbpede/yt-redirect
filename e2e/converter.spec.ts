@@ -114,3 +114,15 @@ test("shows the error in the language the visitor picked", async ({ page }) => {
 
   await expect(page.locator("#error-text")).toHaveText("Please paste a YouTube link.");
 });
+
+test("a failed submit is announced and tied to the field", async ({ page }) => {
+  // Without role="alert" the message appears silently for a screen-reader user.
+  await page.locator("#youtube-url").fill("https://example.com/not-youtube");
+  await page.locator("#submit-button").click();
+
+  const error = page.locator("#error-message");
+  await expect(error).toBeVisible();
+  await expect(error).toHaveAttribute("role", "alert");
+  await expect(page.locator("#youtube-url")).toHaveAttribute("aria-invalid", "true");
+  await expect(page.locator("#youtube-url")).toHaveAttribute("aria-describedby", "error-message");
+});

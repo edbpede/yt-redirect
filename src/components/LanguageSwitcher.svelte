@@ -40,6 +40,23 @@
   function select(lang: Language): void {
     languageStore.set(lang);
     open = false;
+    // Focus returns to the trigger, otherwise selecting an item drops focus to
+    // <body> and a keyboard user restarts their traversal from the top of the page.
+    button?.focus();
+  }
+
+  /**
+   * Escape closes the menu and returns focus.
+   *
+   * The trigger reports `aria-expanded`, and a control that announces that state
+   * has to let a keyboard user act on it; an aria-expanded Escape cannot change
+   * is a promise the widget does not keep.
+   */
+  function closeOnEscape(event: KeyboardEvent): void {
+    if (event.key === "Escape" && open) {
+      open = false;
+      button?.focus();
+    }
   }
 
   /** Close on any click that landed outside both the trigger and the menu. */
@@ -52,7 +69,7 @@
   }
 </script>
 
-<svelte:document onclick={closeOnOutsideClick} />
+<svelte:document onclick={closeOnOutsideClick} onkeydown={closeOnEscape} />
 
 <div class="absolute top-4 right-4 sm:top-6 sm:right-6">
   <div class="relative">
@@ -63,6 +80,8 @@
       class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 border border-slate-200 dark:border-slate-700"
       aria-label={copy.language.select}
       aria-expanded={open}
+      aria-haspopup="menu"
+      aria-controls="language-menu"
       onclick={() => {
         open = !open;
       }}
@@ -78,11 +97,13 @@
     <div
       bind:this={menu}
       id="language-menu"
+      role="menu"
       class:hidden={!open}
       class="absolute right-0 mt-2 w-40 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden z-10"
     >
       <button
         data-lang="da"
+        role="menuitem"
         class="language-option w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
         onclick={() => select("da")}
       >
@@ -90,6 +111,7 @@
       </button>
       <button
         data-lang="en"
+        role="menuitem"
         class="language-option w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
         onclick={() => select("en")}
       >

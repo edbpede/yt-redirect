@@ -93,6 +93,8 @@
         class="w-full px-4 sm:px-6 py-3 sm:py-4 text-base sm:text-lg bg-slate-50 dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500"
         autocomplete="off"
         spellcheck="false"
+        aria-invalid={errorKey !== null}
+        aria-describedby={errorKey === null ? undefined : "error-message"}
         bind:value={url}
         oninput={() => {
           errorKey = null;
@@ -101,7 +103,12 @@
     </div>
 
     <!-- Error Message -->
-    <div id="error-message" class:hidden={errorKey === null} class="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+    <!--
+      role="alert" so a screen reader announces the failure: without it the
+      message simply appears and nothing is spoken. aria-invalid/aria-describedby
+      below tie it to the field it is about.
+    -->
+    <div id="error-message" role="alert" class:hidden={errorKey === null} class="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
       <p class="text-sm text-red-600 dark:text-red-400 flex items-start gap-2">
         <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
           <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>

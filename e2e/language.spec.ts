@@ -114,3 +114,36 @@ test("picking a language closes the menu", async ({ page }) => {
 
   await expect(page.locator("#language-menu")).toBeHidden();
 });
+
+test("Escape closes the menu and returns focus to the trigger", async ({ page }) => {
+  // The trigger reports aria-expanded, so a keyboard user has to be able to act
+  // on that state. Without the Escape handler the attribute is a promise the
+  // widget does not keep.
+  const button = page.locator("#language-button");
+  const menu = page.locator("#language-menu");
+
+  await button.click();
+  await expect(menu).toBeVisible();
+  await expect(button).toHaveAttribute("aria-expanded", "true");
+
+  await page.keyboard.press("Escape");
+
+  await expect(menu).toBeHidden();
+  await expect(button).toHaveAttribute("aria-expanded", "false");
+  await expect(button).toBeFocused();
+});
+
+test("selecting a language returns focus to the trigger", async ({ page }) => {
+  await page.locator("#language-button").click();
+  await page.locator('[data-lang="en"]').click();
+
+  await expect(page.locator("#app-title")).toHaveText("YouTube Link Converter");
+  await expect(page.locator("#language-button")).toBeFocused();
+});
+
+test("the trigger and menu are wired together for assistive tech", async ({ page }) => {
+  const button = page.locator("#language-button");
+  await expect(button).toHaveAttribute("aria-haspopup", "menu");
+  await expect(button).toHaveAttribute("aria-controls", "language-menu");
+  await expect(page.locator("#language-menu")).toHaveAttribute("role", "menu");
+});
