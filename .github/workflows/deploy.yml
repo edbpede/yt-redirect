@@ -1,3 +1,12 @@
+# Publish the built static site to GitHub Pages at https://yt.edbpede.net.
+#
+# The app is `output: "static"` with no adapter and no server, so the deployable
+# artefact is exactly `dist/`. peaceiris/actions-gh-pages force-pushes that
+# directory to the `gh-pages` branch and writes the CNAME file on every run,
+# which is why the custom domain survives a redeploy instead of being reset.
+#
+# Quality, smoke and test gates run on the pull request that produced the commit;
+# this workflow deliberately does not re-run them, it publishes what landed.
 name: Deploy to GitHub Pages
 
 on:
@@ -21,21 +30,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v7
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: 24
-          cache: npm
+          # Derived from the committed `packageManager` field, not `latest`:
+          # a deploy must build with the same toolchain the gates validated.
+          bun-version-file: package.json
 
-      # `npm ci` rather than `npm install`: installs exactly what
-      # package-lock.json pins instead of quietly resolving newer versions at
-      # deploy time, and fails loudly if the lockfile is out of step with
-      # package.json. Matches code-quality.yml and smoke.yml.
+      # `--frozen-lockfile` rather than a plain install: installs exactly what
+      # bun.lock pins instead of quietly resolving newer versions at deploy time,
+      # and fails loudly if the lockfile is out of step with package.json.
+      # Matches code-quality.yml, tests.yml and smoke.yml.
       - name: Install dependencies
-        run: npm ci
+        run: bun install --frozen-lockfile
 
       - name: Build project
-        run: npm run build
+        run: bun run build
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
