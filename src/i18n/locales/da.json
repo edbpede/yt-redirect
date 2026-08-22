@@ -6,7 +6,8 @@
   "form": {
     "inputPlaceholder": "Indsæt YouTube link her...",
     "convertButton": "Konverter og Åbn",
-    "converting": "Konverterer..."
+    "converting": "Konverterer...",
+    "tip": "Indsæt ethvert YouTube link format - vi håndterer konverteringen automatisk!"
   },
   "errors": {
     "invalidUrl": "Ugyldig YouTube URL. Indsæt venligst et gyldigt YouTube link.",
