@@ -18,60 +18,37 @@ export const translations = {
 export type TranslationKeys = typeof da;
 
 /**
- * Get translation for a specific key path
+ * Walk a dotted key path through one locale's translation object.
+ * @returns The string at that path, or null if the path does not resolve to one.
+ */
+function resolve(source: TranslationKeys, key: string): string | null {
+  let value: unknown = source;
+
+  for (const segment of key.split(".")) {
+    if (typeof value !== "object" || value === null || !(segment in value)) {
+      return null;
+    }
+    value = (value as Record<string, unknown>)[segment];
+  }
+
+  return typeof value === "string" ? value : null;
+}
+
+/**
+ * Get translation for a specific key path.
+ *
+ * Prefer `getTranslations(lang)` and reach for a property directly where the key
+ * is known at author time — that is type-checked, and this is not. This exists
+ * for the one case where it cannot be: `convertYouTubeUrl` returns an error
+ * *key*, which the form looks up as `errors.<key>`.
+ *
  * @param lang - The language code
  * @param key - The translation key path (e.g., 'app.title')
- * @returns The translated string
+ * @returns The translated string, the default language's string if the key is
+ *   missing from `lang`, or the key itself if neither has it.
  */
 export function t(lang: Language, key: string): string {
-  const keys = key.split(".");
-  let value: any = translations[lang];
-
-  for (const k of keys) {
-    if (value && typeof value === "object" && k in value) {
-      value = value[k];
-    } else {
-      // Fallback to default language if key not found
-      value = translations[defaultLang];
-      for (const fallbackKey of keys) {
-        if (value && typeof value === "object" && fallbackKey in value) {
-          value = value[fallbackKey];
-        } else {
-          return key; // Return key if translation not found
-        }
-      }
-      break;
-    }
-  }
-
-  return typeof value === "string" ? value : key;
-}
-
-/**
- * Get the current language from localStorage or default
- * @returns The current language code
- */
-export function getCurrentLanguage(): Language {
-  if (typeof window === "undefined") {
-    return defaultLang;
-  }
-
-  const stored = localStorage.getItem("language");
-  if (stored && (stored === "da" || stored === "en")) {
-    return stored as Language;
-  }
-
-  return defaultLang;
-}
-
-/**
- * Set the current language in localStorage
- * @param lang - The language code to set
- */
-export function setLanguage(lang: Language): void {
-  if (typeof window !== "undefined") {
-    localStorage.setItem("language", lang);
-  }
+  return resolve(translations[lang], key) ?? resolve(translations[defaultLang], key) ?? key;
 }
 
 /**

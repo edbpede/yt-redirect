@@ -1,4 +1,4 @@
-# Code quality gate: Biome (format + lint), Astro type check, unit tests, build.
+# Code quality gate: Biome (format + lint), Astro/Svelte type check, build.
 #
 # The `biome-migrate` job exists so Renovate's grouped "biome" PRs can carry the
 # config migration a new Biome release may require: it runs the repo-local
@@ -6,6 +6,9 @@
 # to the same Renovate branch. It is the ONLY job granted `contents: write`, and
 # its `if:` restricts it to Renovate branches in this repository — ordinary and
 # forked pull requests can never reach the write path.
+#
+# The unit suite and the Playwright end-to-end run live in tests.yml, and route
+# loading in smoke.yml; this file owns formatting, types and the build only.
 name: Code Quality
 
 on:
@@ -43,28 +46,27 @@ jobs:
           # migration commit can be pushed back to the Renovate branch.
           ref: ${{ github.head_ref }}
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v7
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          # No committed Node version file in this repo; pinned explicitly to
-          # an LTS release rather than tracking `latest`.
-          node-version: 24
-          cache: npm
+          # Derived from the committed `packageManager` field, not `latest`.
+          bun-version-file: package.json
 
       - name: Install dependencies
-        run: npm ci
+        run: bun install --frozen-lockfile
 
-      # `npx biome` resolves the @biomejs/biome devDependency from node_modules,
-      # so the migration runs on the exact version Renovate just bumped to.
+      # `bunx --bun biome` resolves the @biomejs/biome devDependency from
+      # node_modules, so the migration runs on the exact version Renovate just
+      # bumped to.
       - name: Migrate Biome configuration
-        run: npx biome migrate --write
+        run: bunx --bun biome migrate --write
 
       # Allowed to modify files. `continue-on-error` (not `|| true`) keeps a
       # genuine failure visible in the UI while still letting the commit step
       # capture whatever was fixed; the gate is the non-writing check below.
       - name: Apply Biome formatting and safe fixes
         continue-on-error: true
-        run: npx biome check --write .
+        run: bunx --bun biome check --write .
 
       - name: Commit and push migration result
         run: |
@@ -80,10 +82,10 @@ jobs:
 
       # Authoritative, non-writing verification. Failures here fail the job.
       - name: Verify Biome check passes
-        run: npx biome ci .
+        run: bunx --bun biome ci .
 
   quality:
-    name: Format · lint · types · test · build
+    name: Format · lint · types · build
     runs-on: ubuntu-latest
     timeout-minutes: 20
     needs: [biome-migrate]
@@ -101,23 +103,26 @@ jobs:
           # On a Renovate PR this picks up the migration commit pushed above.
           ref: ${{ github.head_ref || github.ref }}
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v7
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: 24
-          cache: npm
+          bun-version-file: package.json
 
       - name: Install dependencies
-        run: npm ci
+        run: bun install --frozen-lockfile
 
+      # Biome is the only formatter and linter. It formats TS/JS/JSON and lints
+      # the script blocks inside .astro/.svelte. Nothing formats .astro/.svelte
+      # markup or Markdown.
       - name: Biome format and lint check
-        run: npx biome ci .
+        run: bunx --bun biome ci .
 
-      - name: Astro type check
-        run: npm run check
-
-      - name: Test
-        run: npm test
+      # `bun run check` is `astro check` followed by `svelte-check`. Both are
+      # needed: astro check does not look inside .svelte files, so without the
+      # second command the islands — where nearly all of this app's logic now
+      # lives — would never be type-checked at all.
+      - name: Astro and Svelte type check
+        run: bun run check
 
       - name: Build
-        run: npm run build
+        run: bun run build

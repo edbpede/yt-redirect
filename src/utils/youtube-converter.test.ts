@@ -1,14 +1,14 @@
 /**
  * Test suite for the YouTube URL converter.
  *
- * Run with: npm test
+ * Run with: bun test
  *
  * These cases were previously a hand-rolled console script that only logged its
  * results, so it could never fail a build. The inputs and expected values are
  * carried over unchanged; only the harness became real assertions.
  */
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 import { convertYouTubeUrl, isYouTubeUrl, normalizeUrl } from "./youtube-converter";
 
 const conversionCases = [
