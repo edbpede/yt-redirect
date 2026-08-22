@@ -64,7 +64,7 @@ function extractVideoId(url: string): string | null {
     }
 
     return null;
-  } catch (error) {
+  } catch {
     return null;
   }
 }
@@ -93,7 +93,7 @@ export function isYouTubeUrl(url: string): boolean {
     ];
 
     return validHosts.includes(hostname);
-  } catch (error) {
+  } catch {
     return false;
   }
 }
@@ -150,7 +150,7 @@ export function convertYouTubeUrl(inputUrl: string): ConversionResult {
       success: true,
       convertedUrl: convertedUrl.toString(),
     };
-  } catch (error) {
+  } catch {
     return {
       success: false,
       error: "conversionFailed",
