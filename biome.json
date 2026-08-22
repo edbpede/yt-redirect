@@ -1,15 +1,22 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.5.7/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.5.8/schema.json",
   "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
   "files": {
     "includes": [
-      "**",
-      "!**/dist",
-      "!**/.astro",
-      "!**/.omc",
-      "!**/node_modules",
-      "!**/assets/**/*.svg",
-      "!**/public/**/*.svg"
+      "**/*.ts",
+      "**/*.js",
+      "**/*.mjs",
+      "**/*.json",
+      "**/*.jsonc",
+      "**/*.astro",
+      "**/*.svelte",
+      "!dist",
+      "!.astro",
+      "!.omc",
+      "!node_modules",
+      "!playwright-report",
+      "!test-results",
+      "!bun.lock"
     ]
   },
   "formatter": {
@@ -18,18 +25,43 @@
     "indentWidth": 2,
     "lineWidth": 100
   },
-  "assist": { "enabled": true, "actions": { "source": { "preset": "none" } } },
   "linter": {
     "enabled": true,
     "rules": {
       "preset": "recommended",
-      "correctness": {
-        "noUnusedImports": "off",
-        "noUnusedVariables": "off"
+      "style": {
+        "useConst": "error",
+        "noNonNullAssertion": "off"
+      },
+      "suspicious": {
+        "noExplicitAny": "error"
       }
     }
   },
   "javascript": {
-    "formatter": { "quoteStyle": "double", "semicolons": "always", "trailingCommas": "all" }
-  }
+    "formatter": {
+      "quoteStyle": "double",
+      "trailingCommas": "all",
+      "semicolons": "always"
+    }
+  },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  },
+  "overrides": [
+    {
+      "includes": ["**/*.astro", "**/*.svelte"],
+      "formatter": { "enabled": false },
+      "linter": {
+        "rules": {
+          "correctness": { "noUnusedVariables": "off", "noUnusedImports": "off" },
+          "style": { "useConst": "off" }
+        }
+      }
+    }
+  ]
 }

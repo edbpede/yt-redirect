@@ -1,0 +1,14 @@
+[install]
+# Single-package project: hoisted is Bun's default here and is what Astro's
+# Vite resolution expects.
+linker = "hoisted"
+# Exact versions, so a lockfile refresh never drifts a minor under us — the
+# stack pins Astro 7.2 / Svelte 5 / UnoCSS 66 deliberately.
+exact = true
+
+[test]
+# Scope `bun test` to the unit suite. Without this, the bare command also picks
+# up e2e/*.spec.ts, which import @playwright/test and cannot run under bun:test
+# — so `bun test` would fail on a healthy tree. The Playwright specs have their
+# own runner (`bun run test:e2e`).
+root = "src"
