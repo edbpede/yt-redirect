@@ -97,9 +97,15 @@ way for them to share state — and switching the language in one island retrans
 exactly that mechanism working.
 
 Consumed in Svelte as a plain `$` auto-subscription (`$languageStore`): nanostores implement the
-Svelte store contract. **There is no `@nanostores/svelte` package** — the npm registry 404s on it;
-the framework adapters exist for React, Vue and Solid, which have no equivalent built in. Do not
-add it to `package.json`; it will not resolve.
+Svelte store contract, so no adapter package is involved. **There is no `@nanostores/svelte`
+package** — npm has never carried one, so an import of it will not resolve. The framework adapters
+(`@nanostores/react`, `/preact`, `/vue`, `/solid`, `/lit`, `/angular`, `/alpine`) exist for
+frameworks with no equivalent of that contract.
+
+The one case that does need a package is a `.svelte.ts`/`.svelte.js` module, where `$`
+auto-subscription is unavailable — it is a compiler feature of `.svelte` components.
+`@nanostores/svelte-runes` covers that, read through `.current` rather than `$`. Both islands here
+are `.svelte` components, so it is not needed and not installed.
 
 **The persisted shape is a compatibility contract.** The store writes the bare string `da`/`en`
 under the key `language`, which is exactly what the pre-migration `localStorage.setItem("language",
