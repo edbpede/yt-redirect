@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "A modern YouTube link converter that converts YouTube URLs to yout-ube.com equivalents",
   "license": "AGPL-3.0-or-later",
-  "packageManager": "bun@1.3.14",
+  "packageManager": "bun@1.4.0",
   "scripts": {
     "dev": "bunx --bun astro dev",
     "build": "bunx --bun astro build",
@@ -26,7 +26,7 @@
     "@astrojs/svelte": "9.0.1",
     "@biomejs/biome": "2.5.8",
     "@playwright/test": "1.62.1",
-    "@types/bun": "1.3.14",
+    "@types/bun": "1.4.0",
     "@unocss/astro": "66.7.5",
     "@unocss/reset": "66.7.5",
     "svelte-check": "4.7.6",
