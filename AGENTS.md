@@ -185,8 +185,6 @@ map). Keep it that way.
   `exact = true` in `bunfig.toml`.
 - **Any push to `main` deploys**, unless the head commit message contains `[skip ci]`. The custom
   domain comes from the `cname:` input in `deploy.yml`, not a `public/CNAME` file.
-- **Unresolved license conflict:** `package.json` says `"license": "MIT"` while `LICENSE`,
-  `README.md` and the page footer all say AGPL-3.0. Ask before changing either side.
 
 ## Not adopted, and why
 
