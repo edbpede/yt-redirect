@@ -1,4 +1,12 @@
-@import "tailwindcss";
+/*
+ * The browser reset does not live here: `UnoCSS({ injectReset: true })` in
+ * astro.config.mjs pulls in @unocss/reset. Adding an import for one here would
+ * put two resets in the output.
+ *
+ * What this file holds is the handful of base rules the page relies on, kept as
+ * plain CSS rather than moved into uno.config.ts: they are document-level
+ * defaults, not utilities, and nothing generates them on demand.
+ */
 
 /* Custom styles */
 :root {
