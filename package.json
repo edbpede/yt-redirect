@@ -27,11 +27,11 @@
     "@biomejs/biome": "2.5.10",
     "@playwright/test": "1.62.1",
     "@types/bun": "1.4.0",
-    "@unocss/astro": "66.9.1",
-    "@unocss/reset": "66.9.1",
+    "@unocss/astro": "66.9.2",
+    "@unocss/reset": "66.9.2",
     "svelte-check": "4.7.6",
     "typescript": "5.9.3",
-    "unocss": "66.9.1"
+    "unocss": "66.9.2"
   },
   "keywords": [
     "youtube",
