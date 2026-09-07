@@ -12,7 +12,7 @@ UnoCSS, Biome. Read it before writing code here. This file covers what is specif
 
 ## Commands
 
-A Bun repo — `bun.lock`, `packageManager: "bun@1.3.14"`, no `package-lock.json`. All four
+A Bun repo — `bun.lock`, `packageManager: "bun@1.4.2"`, no `package-lock.json`. All four
 workflows install with `bun install --frozen-lockfile`.
 
 | Command | Purpose |
@@ -185,8 +185,9 @@ map). Keep it that way.
   Match the surrounding indentation by hand: `index.astro`'s markup is tab-indented while
   `biome.json` sets 2-space indent for JS.
 - **Do not hand-edit the `$schema` version in `biome.json`.** A Renovate custom manager
-  (`renovate.json`) reads that string as the `@biomejs/biome` version, and the `biome-migrate` job
-  in `code-quality.yml` runs `biome migrate --write` and commits back on Renovate branches.
+  (from the shared preset) tracks the schema alongside the package.
+  `biome-repair.yml` computes fixes with read-only permissions and publishes only
+  allowlisted changes in a separate job, then explicitly dispatches full CI.
 - **Dependency versions are pinned exactly, no `^` ranges** — estate convention, enforced by
   `exact = true` in `bunfig.toml`.
 - **Any push to `main` deploys**, unless the head commit message contains `[skip ci]`. The custom
@@ -211,5 +212,5 @@ map). Keep it that way.
 - `.github/workflows/tests.yml` — the unit and Playwright tier. This is the workflow that actually
   covers the app's behaviour.
 - `.github/workflows/smoke.yml` — build-serve-load. Its header explains what it cannot catch.
-- `.github/workflows/code-quality.yml` — lint/type/build gate and the Renovate/Biome flow; its
-  header explains why `biome-migrate` is the only write-capable job.
+- `.github/workflows/code-quality.yml` — read-only lint/type/unit/build lane.
+- `CI.md` — shared gate, build artifact handoff and isolated Biome repair contract.
