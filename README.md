@@ -3,7 +3,7 @@
 A minimalist web app that converts YouTube links to yout-ube.com equivalents with automatic
 redirection. Built with Astro 7, Svelte 5 islands, TypeScript and UnoCSS, run by Bun.
 
-Live at [yt.edbpede.net](https://yt.edbpede.net).
+Live at [yt.edb.fi](https://yt.edb.fi).
 
 ## Features
 
