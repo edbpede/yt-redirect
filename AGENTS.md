@@ -4,7 +4,7 @@ This file provides guidance to AI coding agents when working with code in this
 repository.
 
 Single-page Astro 7 site that converts YouTube URLs to `yout-ube.com` equivalents. Static build,
-published to GitHub Pages at `yt.edbpede.net`. Two Svelte 5 islands carry all the interactivity;
+published to GitHub Pages at `yt.edb.fi`. Two Svelte 5 islands carry all the interactivity;
 everything else is server-rendered HTML.
 
 `.agents/rules/astro-svelte5-islands.md` is the stack specification — Bun, Astro 7, Svelte 5 runes,
