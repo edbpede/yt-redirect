@@ -190,8 +190,9 @@ map). Keep it that way.
   allowlisted changes in a separate job, then explicitly dispatches full CI.
 - **Dependency versions are pinned exactly, no `^` ranges** — estate convention, enforced by
   `exact = true` in `bunfig.toml`.
-- **Any push to `main` deploys**, unless the head commit message contains `[skip ci]`. The custom
-  domain comes from the `cname:` input in `deploy.yml`, not a `public/CNAME` file.
+- **Successful final CI dispatches deployment for the exact `main` commit.** The publisher checks
+  that revision and its final CI before publishing. The custom domain remains the `cname:` input
+  in `deploy.yml`, not a `public/CNAME` file.
 
 ## Not adopted, and why
 
